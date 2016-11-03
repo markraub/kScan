@@ -5,18 +5,16 @@
 
 * kScan is written in python2.7, and currently runs from the kscan.py file
 
-'''
-
+```
 sudo python kscan.py
-'''
+```
 
 * It will require sudo access in order to listen for iButtons on the 1-wire pin
 
 * kScan reads iButtons independant of any other software or system, it reads it right onto the Raspberry Pi into the following document
 
-'''
-
+```
 /sys/devices/w1_bus_master1/w1_master_slaves
-'''
+```
 
 

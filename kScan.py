@@ -55,8 +55,11 @@ def find_user(varID, cache={}):
 
 
 def get_ibutton():
-
-        GPIO.setup(24,GPIO.OUT)
+	try:
+        	GPIO.setup(24,GPIO.OUT)
+	except:
+		print("uh oh! you didn't run me as root! you gotta!")
+		return
         base_dir = '/sys/devices/w1_bus_master1/w1_master_slaves'
         delete_dir = '/sys/devices/w1_bus_master1/w1_master_remove'
         GPIO.output(24,True)

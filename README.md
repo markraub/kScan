@@ -17,4 +17,19 @@ sudo python kscan.py
 /sys/devices/w1_bus_master1/w1_master_slaves
 ```
 
+##To install on a new Raspberry Pi
+
+* Run the installer script as sudo 
+
+```
+sudo install.sh
+```
+
+* This will install the required repos, and install the firmware for the scanner
+
+* To add firmware, drop the *.deb file in the Firware folder, then add this to the bottom of the installer script:
+
+```
+dpkg -i [your firmware file name].deb
+```
 

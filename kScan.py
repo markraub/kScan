@@ -13,7 +13,6 @@ except:
 
 
 def main():
-
     print("Lets set up that iButton Reader")
     time.sleep(1)
 
@@ -31,7 +30,6 @@ def main():
 
 
 def find_user(varID, cache={}):
-
     ibutton = varID.strip()
     if ibutton in cache:
         return cache[ibutton]
@@ -97,7 +95,6 @@ def get_ibutton():
 
 
 def transferFile(user):
-
     if user is not None:
         takeScan(user)
         imagepath = "/scans/" + user + ".jpeg"
@@ -105,7 +102,6 @@ def transferFile(user):
 
 
 def takeScan(user):
-
     ver = sane.init()
     print("SANE Version: " + ver)
 

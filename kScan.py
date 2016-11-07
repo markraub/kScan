@@ -90,8 +90,8 @@ def get_ibutton():
             d.write(ibutton)
             GPIO.output(24, True)
 
-        d.close()
-        GPIO.cleanup()
+    d.close()
+    GPIO.cleanup()
 
 
 def transferFile(user):

@@ -53,7 +53,7 @@ def saveDoc(user):
     return False
 
 
-def sendMail(attachment, user):
+def sendMail(user):
 
     me = "kscan@csh.rit.edu"
     you = user + "@csh.rit.edu"
@@ -147,7 +147,6 @@ def get_ibutton():
                         else:
 
                             os.system("rm -rf /scans/" + each)
-
                             goodbyeMail(each)
 
                 data = open(base_dir, "r")
@@ -160,7 +159,7 @@ def get_ibutton():
 
                         try:
 
-                            user = find_user()
+                            user = find_user("67" + ibutton[2:] + "01")
                             if user is None:
                                 print("Cannot scan, ldap didn't give me a user")
 

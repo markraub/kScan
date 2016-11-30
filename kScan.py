@@ -151,6 +151,7 @@ def get_ibutton():
 
                 data = open(base_dir, "r")
                 ibutton = data.read()
+                ibutton = ibutton.strip()
                 data.close()
                 if ibutton != 'not found.\n':
                         GPIO.output(24,False)
@@ -159,7 +160,7 @@ def get_ibutton():
 
                         try:
 
-                            user = find_user("67" + ibutton[2:] + "01")
+                            user = find_user("67" + ibutton[3:] + "01")
                             if user is None:
                                 print("Cannot scan, ldap didn't give me a user")
 

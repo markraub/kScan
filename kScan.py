@@ -149,10 +149,10 @@ def get_ibutton():
 
 
 def transferFile(user):
-        if user is not None:
-            takeScan(user)
-            imagepath = "/scans/" + user + ".jpeg"
-            os.system('scp ' + imagepath + " " + user + "@shell.csh.rit.edu:~/.scan/")
+    if user is not None:
+        takeScan(user)
+        imagepath = "/scans/" + user + ".jpeg"
+        os.system('scp ' + imagepath + " " + user + "@shell.csh.rit.edu:~/.scan/")
 
 
 def takeScan(user):

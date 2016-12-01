@@ -1,4 +1,5 @@
 import os
+from os.path import basename
 import random
 import time
 import RPi.GPIO as GPIO
@@ -7,7 +8,7 @@ import ldap
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.image import MIMEImage
+from email.mime.application import MIMEApplication
 GPIO.setmode(GPIO.BCM)
 
 
@@ -46,33 +47,37 @@ def saveDoc(user):
     return False
 
 
-def sendMail(user):
+def sendMail(attachment, user):
+	
     me = "kscan@csh.rit.edu"
     you = user + "@csh.rit.edu"
     text = MIMEText("Your scan is complete! \nIf something is wrong with this email, check out the wiki to learn another way to get your file!")
-    fp = open("/scans/" + user, 'rb')
-    msg = MIMEImage(fp.read())
-    fp.close()
+    msg = MIMEMultipart() 
+    msg.attach(text)
+    f = open(attachment, "rb")
+    part = MIMEApplication(f.read(), Name=basename(attachment))
+    part["Content-Disposition"] = 'attachment; filename="%s"' % basename(attachment)
+    msg.attach(part)
     msg["Subject"] = "Here is your completed scan!"
     msg["From"] = me
     msg["To"] = you
+    msg.preamble = "Here is your completed scan!"
     s = smtplib.SMTP('mail.csh.rit.edu')
-    p = smtplib.SMTP_SSL_PORT('465')
-    s.sendmail(me, you, text)
+    s.sendmail(me, you, msg.as_string())
     s.quit()
 
 
 def goodbyeMail(user):
     me = "kscan@csh.rit.edu"
     you = user + "@csh.rit.edu"
-    msg = MIMEText("Scans Deleted")
-    text = MIMEText("Your scan folder has been deleted, for more info see the wiki")
-    msg["Subject"] = "Scan Folder Deleted"
+    msg = MIMEMultipart()
+    text = MIMEText("Your scan backup has been deleted, for more info see the wiki")
+    msg.attach(text)
+    msg["Subject"] = "Scan Backup Deleted"
     msg["From"] = me
     msg["To"] = you
     s = smtplib.SMTP('mail.csh.rit.edu')
-    p = smtplib.SMTP_SSL_PORT('465')
-    s.sendmail(me, you, text)
+    s.sendmail(me, you, msg.as_string())
     s.quit()
 
 
@@ -160,4 +165,5 @@ def takeScan(user):
 
 
 if __name__ == "__main__":
-        main()
+        #main()
+	goodbyeMail(find_user("67000001ECFCC601"))

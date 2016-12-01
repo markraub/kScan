@@ -34,21 +34,25 @@ def main():
     get_ibutton()
 
 
-def saveDoc(user):
-    directory = os.popen("ls /scans").read()
+def saveDoc(file_name, user):
+    directory = os.popen("ls /scans/").read()
     folders = directory.split()
+    print(folders)
     if user not in folders:
         os.system("mkdir /scans/" + user)
-        saveDoc(user)
+        os.system("mv /scans/TMP/* /scans/" + user + "/")
+	return True
     else:
-        os.system("mv /scans/TMP /scans/" + user)
+        os.system("mv /scans/TMP/* /scans/" + user + "/")
         return True
 
     return False
 
 
-def sendMail(attachment, user):
-	
+def sendMail(file_name, user):
+    
+
+    attachment = "/scans/" + user + "/" + file_name
     me = "kscan@csh.rit.edu"
     you = user + "@csh.rit.edu"
     text = MIMEText("Your scan is complete! \nIf something is wrong with this email, check out the wiki to learn another way to get your file!")
@@ -122,6 +126,7 @@ def get_ibutton():
                 else:
                     os.system("rm -rf /scans/" + each)
                     goodbyeMail(each)
+            os.system("mkdir /scans/TMP")
 
         data = open(base_dir, "r")
         ibutton = data.read()
@@ -137,9 +142,8 @@ def get_ibutton():
                     print("Cannot scan, ldap didn't give me a user")
                 else:
                     print(user)
-                    takeScan(user)
-                    sendMail(user)
-                    saveDoc(user)
+                    filename = takeScan(user)
+                    print("scan saved as" + filename)
 
             except Exception as e:
                 print(e)
@@ -153,17 +157,17 @@ def get_ibutton():
     GPIO.cleanup()
 
 
-def transferFile(user):
-    if user is not None:
-        takeScan(user)
-        imagepath = "/scans/" + user + ".jpeg"
-        os.system('scp ' + imagepath + " " + user + "@shell.csh.rit.edu:~/.scan/")
-
-
 def takeScan(user):
-    os.system("scanimage --resolution 400 -x 215 -y 279 > /scans/TMP/" + user + "_" + str(random.randint(0, 100)) + "_scan.jpg")
+    file_name = user + "_" + str(random.randint(0, 100)) + "_scan.jpg"
+    os.system("scanimage --resolution 250 -x 215 -y 279 > /scans/TMP/" + file_name)
+    
+    saveDoc(file_name, user)
+    sendMail(file_name, user)
+    return file_name
 
 
 if __name__ == "__main__":
         #main()
-	goodbyeMail(find_user("67000001ECFCC601"))
+	#goodbyeMail(find_user("67000001ECFCC601"))
+	#saveDoc(find_user("67000001ECFCC601"))
+	takeScan(find_user("67000001ECFCC601"))

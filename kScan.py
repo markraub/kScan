@@ -159,10 +159,11 @@ def get_ibutton():
 
 def takeScan(user):
     file_name = user + "_" + str(random.randint(0, 100)) + "_scan.jpg"
-    os.system("scanimage --resolution 250 -x 215 -y 279 > /scans/TMP/" + file_name)
-    
-    saveDoc(file_name, user)
-    sendMail(file_name, user)
+    os.system("scanimage --resolution 300 -x 215 -y 279 > /scans/TMP/" + file_name)
+    os.system("zip /scans/TMP/"+ user +" /scans/TMP/" + file_name)
+    zip_name = user + ".zip"
+    saveDoc(zip_name, user)
+    sendMail(zip_name, user)
     return file_name
 
 

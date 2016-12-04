@@ -52,7 +52,7 @@ def main():
         ibutton = ibutton.strip()
         data.close()
 
-        if ibutton != 'not found.\n':
+        if not 'not' in ibutton:
             GPIO.output(24, False)
             time.sleep(1)
             print(ibutton)

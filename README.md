@@ -25,11 +25,6 @@ sudo python kscan.py
 sudo install.sh
 ```
 
-* This will install the required repos, and install the firmware for the scanner
+* This will install the required repos
 
-* To add firmware, drop the *.deb file in the Firware folder, then add this to the bottom of the installer script:
-
-```
-dpkg -i [your firmware file name].deb
-```
 

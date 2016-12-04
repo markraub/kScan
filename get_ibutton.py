@@ -3,23 +3,6 @@ import csh_ldap
 import os
 
 
-def init():
-
-    print("Lets set up that iButton Reader")
-
-    try:
-        os.system('modprobe wire timeout=1 slave_ttl=5')
-        os.system('modprobe w1-gpio')
-        os.system('modprobe w1-smem')
-
-    except:
-
-        print("You probably need to re-run this as sudo buddy")
-        exit()
-
-    print("We did it!\nGo ahead and start scanning my dude!")
-
-
 def find_user(varID):
 
     ibutton = varID.strip()

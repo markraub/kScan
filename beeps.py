@@ -98,16 +98,18 @@ def beep(note, delay):
 
     delay /= 100
 
-    p = GPIO.PWM(15, 50)
+    
+    p = GPIO.PWM(15, note)
+    p.ChangeDutyCycle(90)
     p.start(0)
 
-    p.changeDutyCycle(note)
     time.sleep(delay)
 
     p.stop()
 
 def march():
-    
+   
+    GPIO.setup(15, GPIO.OUT) 
     beep(NOTE_A4, 500)
     beep(NOTE_A4, 500)
     beep(NOTE_F4, 350)

@@ -15,13 +15,34 @@ except:
 
     pass
 
+def delScans():
+
+    user_dirs = os.popen("ls /scans").read()
+    folders = user_dirs.split()
+
+    for each in folders:
+
+        if each == "TMP":
+
+            pass
+
+        else:
+
+            os.system("rm -rf /scans/" + each)
+            mail_sender.goodbyeMail(each)
+
+
+
 
 def main():
 
-    get_ibutton.init()
 
-    GPIO.setup(12, GPIO.OUT)
-    GPIO.setup(24, GPIO.OUT)
+    try:
+        GPIO.setup(15, GPIO.OUT)
+        GPIO.setup(12, GPIO.OUT)
+        GPIO.setup(24, GPIO.OUT)
+    except:
+        print("[" + time.strftime('%y-%m-%d %H:%M:%S', time.localtime()) + "] GPIO pins not set" )
     base_dir = '/sys/devices/w1_bus_master1/w1_master_slaves'
     delete_dir = '/sys/devices/w1_bus_master1/w1_master_remove'
     GPIO.output(24, True)
@@ -36,17 +57,7 @@ def main():
             print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(tick)))
 
             start_time = time.time()
-            user_dirs = os.popen("ls /scans").read()
-            folders = user_dirs.split()
-
-            for each in folders:
-                if each == "TMP":
-                    pass
-                else:
-                    os.system("rm -rf /scans/" + each)
-                    mail_sender.goodbyeMail(each)
-
-            os.system("mkdir /scans/TMP")
+            delScans()
 
         data = open(base_dir, "r")
         ibutton = data.read()
@@ -55,8 +66,8 @@ def main():
 
         if not 'not' in ibutton:
             GPIO.output(24, False)
-            beeps.beep(400, 500)
-            time.sleep(1)
+            #beeps.beep(400, 500)
+            #time.sleep(1)
             print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] iButton found!" + ibutton)
 
             try:
@@ -103,17 +114,21 @@ def saveDoc(file_name, user):
 
 def takeScan(user):
 
-    file_name = user + "_" + str(random.randint(0, 100)) + "_scan.jpg"
+    file_name = user + "_" + str(int(time.time())) + "_scan.jpg"
+    
+    os.system("cp ./yes.html /var/www/html/index.html")
 
     os.system("scanimage --resolution 300 -x 215 -y 279 > /scans/TMP/" + file_name)
 
     print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] scan complete")
 
-    beeps.march()
+    #beeps.march()
 
     os.system("mogrify -resize 90% /scans/TMP/" + file_name)
 
     saveDoc(file_name, user)
+
+    os.system("cp ./no.html /var/www/html/index.html")
 
     return file_name
 

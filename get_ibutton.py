@@ -1,5 +1,5 @@
 import credentials as login
-import ldap
+import csh_ldap
 import os
 
 
@@ -21,15 +21,16 @@ def init():
 
 
 def find_user(varID):
-    ibutton = varID.strip()
 
+    ibutton = varID.strip()
+    ibutton = "*" + ibutton
     try:
-        #conn = ldap.initialize(login.ldap_server, bytes_mode=True)
-        conn = ldap.initialize(login.ldap_server)
-        conn.simple_bind_s(login.ldap_user, login.ldap_pass)
-        ldap_results = conn.search_s('ou=Users,dc=csh,dc=rit,dc=edu', ldap.SCOPE_SUBTREE, "(ibutton=*%s)" % ibutton,
-                ['uid', 'homeDirectory'])
-        return ldap_results[0][1]['uid'][0]
+
+        instance = csh_ldap.CSHLDAP(login.ldap_user, login.ldap_pass)
+
+        user = instance.get_member_ibutton(ibutton)
+
+        return user.uid
 
     except Exception as e:
 
@@ -37,3 +38,7 @@ def find_user(varID):
         print("\n")
         print("were having some trouble getting your user ID, try scanning again")
         return None
+
+if __name__ == "__main__":
+
+    print(find_user("000001ECFCC601"))

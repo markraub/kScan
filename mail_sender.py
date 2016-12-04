@@ -3,6 +3,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from os.path import basename
+import time
+import locale
 
 
 def sendMail(file_name, user):
@@ -24,6 +26,7 @@ def sendMail(file_name, user):
     msg.preamble = "Here is your completed scan!"
     s = smtplib.SMTP('mail.csh.rit.edu')
     s.sendmail(me, you, msg.as_string())
+    print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] Email message sent")
     s.quit()
 
 
@@ -38,4 +41,10 @@ def goodbyeMail(user):
     msg["To"] = you
     s = smtplib.SMTP('mail.csh.rit.edu')
     s.sendmail(me, you, msg.as_string())
+    print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] Email message sent")
     s.quit()
+
+if __name__ == "__main__":
+
+    pass
+

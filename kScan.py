@@ -4,6 +4,7 @@ import time
 import RPi.GPIO as GPIO
 import get_ibutton
 import mail_sender
+import beeps
 
 GPIO.setmode(GPIO.BCM)
 
@@ -19,7 +20,7 @@ def main():
 
     get_ibutton.init()
 
-
+    GPIO.setup(12, GPIO.OUT)
     GPIO.setup(24, GPIO.OUT)
     base_dir = '/sys/devices/w1_bus_master1/w1_master_slaves'
     delete_dir = '/sys/devices/w1_bus_master1/w1_master_remove'
@@ -54,24 +55,26 @@ def main():
 
         if not 'not' in ibutton:
             GPIO.output(24, False)
+            beeps.beep(400, 500)
             time.sleep(1)
-            print(ibutton)
+            print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] iButton found!" + ibutton)
 
             try:
                 user = get_ibutton.find_user(ibutton[3:] + "01")
                 if user is None:
-                    print("Cannot scan, ldap didn't give me a user")
+                    print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] Cannot scan, ldap didn't give me a user")
                 else:
-                    print("iButton read! you must be " + user)
+                    print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] iButton read! you must be " + user)
                     file_name = takeScan(user)
 
                     mail_sender.sendMail(file_name, user)
 
-                    print("scan saved as" + file_name)
+                    print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] scan saved as " + file_name)
 
             except Exception as e:
                 print(e)
-                print("Captain, I'm afraid the ship is sinking")
+                print("[" + time.strftime('%Y-%m-%d %H:%M:%S',
+                                          time.localtime()) + "] Captain, I'm afraid the ship is sinking")
 
             d = open(delete_dir, "w")
             d.write(ibutton)
@@ -95,8 +98,7 @@ def saveDoc(file_name, user):
 
         os.system("mv /scans/TMP/" + file_name + " /scans/" + user + "/")
 
-
-    print("File saved in /scans/" + user)
+        print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] File saved in /scans/" + user)
 
 
 def takeScan(user):
@@ -104,6 +106,10 @@ def takeScan(user):
     file_name = user + "_" + str(random.randint(0, 100)) + "_scan.jpg"
 
     os.system("scanimage --resolution 300 -x 215 -y 279 > /scans/TMP/" + file_name)
+
+    print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] scan complete")
+
+    beeps.march()
 
     os.system("mogrify -resize 90% /scans/TMP/" + file_name)
 

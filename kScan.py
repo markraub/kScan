@@ -2,15 +2,19 @@ import os
 import random
 import time
 import RPi.GPIO as GPIO
-import get_ibutton
+#import get_ibutton
 import mail_sender
 import beeps
 import threading
+from roxasauth import roxasauth
+import json
+
+api_key = "8206636300fe27b345b5101c474a2880c8ea8d52"
 
 GPIO.setmode(GPIO.BCM)
 
 try:
-    GPIO.cleanup()
+   GPIO.cleanup()
 
 except:
 
@@ -71,16 +75,26 @@ def main():
             print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] iButton found!" + ibutton)
 
             try:
-                user = get_ibutton.find_user(ibutton[3:] + "01")
-                if user is None:
+                #user = get_ibutton.find_user(ibutton[3:] + "01")
+                rox_obj = roxasauth(api_key)
+                ibutton_format = ibutton[3:] + "01"
+                rox_dic = rox_obj.ibutton(ibutton_format, ["uid"])
+                if rox_dic is None:
                     print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] Cannot scan, ldap didn't give me a user")
                 else:
-                    print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] iButton read! you must be " + user)
-                    file_name = takeScan(user)
+                    
+                    if rox_dic["can_access"]:
 
-                    mail_sender.sendMail(file_name, user)
+                        user = rox_dic["returned_attrs"]["uid"]
+                        print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] iButton read! you must be " + user)
+                        file_name = takeScan(user)
 
-                    print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] scan saved as " + file_name)
+                        mail_sender.sendMail(file_name, user)
+
+                        print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] scan saved as " + file_name)
+                    else:
+
+                        print("[" + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()) + "] user does not have access ")
 
             except Exception as e:
                 print(e)

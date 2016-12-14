@@ -5,6 +5,7 @@ import RPi.GPIO as GPIO
 import get_ibutton
 import mail_sender
 import beeps
+import threading
 
 GPIO.setmode(GPIO.BCM)
 
@@ -33,12 +34,11 @@ def delScans():
 
 
 
-
 def main():
 
 
     try:
-        GPIO.setup(15, GPIO.OUT)
+        
         GPIO.setup(12, GPIO.OUT)
         GPIO.setup(24, GPIO.OUT)
     except:
@@ -116,7 +116,7 @@ def takeScan(user):
 
     file_name = user + "_" + str(int(time.time())) + "_scan.jpg"
     
-    os.system("cp ./yes.html /var/www/html/index.html")
+    os.system("cp /home/markraub/Github/kScan/yes.html /var/www/html/index.html")
 
     os.system("scanimage --resolution 300 -x 215 -y 279 > /scans/TMP/" + file_name)
 
@@ -128,12 +128,27 @@ def takeScan(user):
 
     saveDoc(file_name, user)
 
-    os.system("cp ./no.html /var/www/html/index.html")
+    os.system("cp /home/markraub/Github/kScan/no.html /var/www/html/index.html")
 
     return file_name
+
+def glow():
+
+    GPIO.cleanup()
+
+    p = GPIO.PWM(24, 100)
+
+    for i in range(0, 100):
+
+        p.ChangeDutyCycle(i)
+
+    for i in range(0, 100):
+
+        p.ChangeDutyCycle(100-i)
 
 
 if __name__ == "__main__":
 
     main()
+    #delScans()
 
